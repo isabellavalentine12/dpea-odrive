@@ -1,6 +1,9 @@
 <MainScreen>:
 
     name: 'main'
+    velocity_slider: velocity_slider
+    velocity_slider_label: velocity_slider_label
+
     FloatLayout:
         size_hint: None, None
 
@@ -20,6 +23,49 @@
         pos_hint: {"x": 0, "y":0}
         color: 1, 0, 0, 1
         on_press: root.switch_to_gpio()
+
+    DPEAButton:
+        text: 'Motor Toggle'
+        size: 100, 100
+        x: root.width * .15
+        y: root.height * .75
+        color: 0, .5, .5, 1
+        on_press: root.motor_toggle()
+
+    Slider:
+        id: velocity_slider
+        size_hint: .1 ,1
+        x: root.width * 0.5
+        min: 0
+        max: 10
+        step: 0.01
+        orientation: 'vertical'
+        sensitivity: 'handle'
+        on_value: root.velocity_function()
+
+    Label:
+        id: velocity_slider_label
+        text: str(round(velocity_slider.value, 2))
+        size_hint: None, None
+        color: 0, .5, .5, 1
+        center_x: root.width * 0.65
+        center_y: root.height * 0.5
+        bold: True
+        outline_width: self.font_size * 0.1
+        outline_color: 0, 0, 0
+        font_size: 50
+
+    Label:
+        id: motor_velocity_label
+        text: 'Motor Velocity'
+        size_hint: None, None
+        color: 0, .5, .5, 1
+        center_x: root.width * 0.65
+        center_y: root.height * 0.42
+        bold: True
+        outline_width: self.font_size * 0.1
+        outline_color: 0, 0, 0
+        font_size: 20
 
 <TrajectoryScreen>:
 

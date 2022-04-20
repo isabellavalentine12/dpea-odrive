@@ -27,6 +27,22 @@ TRAJ_SCREEN_NAME = 'traj'
 GPIO_SCREEN_NAME = 'gpio'
 ADMIN_SCREEN_NAME = 'admin'
 
+from odrive_helpers import *
+od = find_odrive()
+assert od.config.enable_brake_resistor is True, "Check for faulty brake resistor."
+# axis0 and axis1 correspond to M0 and M1 on the ODrive
+# You can also set the current limit and velocity limit when initializing the axis
+ax = ODriveAxis(od.axis0, current_lim=10, vel_lim=10)
+# Basic motor tuning, for more precise tuning,
+# follow this guide: https://docs.odriverobotics.com/v/latest/control.html#tuning
+ax.set_gains()
+if not ax.is_calibrated():
+    print("calibrating...")
+    ax.calibrate_with_current_lim(10)
+print("Current Limit: ", ax.get_current_limit())
+print("Velocity Limit: ", ax.get_vel_limit())
+ax.set_vel(0)
+dump_errors(od)
 
 class ProjectNameGUI(App):
     """
@@ -48,6 +64,13 @@ class MainScreen(Screen):
     """
     Class to handle the main screen and its associated touch events
     """
+    count = 0
+
+    #self.velocity = root.velocity_slider.value/10
+
+    def velocity_function(self):
+        ax.set_vel(self.velocity_slider.value)
+        self.velocity_slider.text = str(round(self.velocity_slider.value))
 
     def switch_to_traj(self):
         SCREEN_MANAGER.transition.direction = "left"
@@ -56,6 +79,32 @@ class MainScreen(Screen):
     def switch_to_gpio(self):
         SCREEN_MANAGER.transition.direction = "right"
         SCREEN_MANAGER.current = GPIO_SCREEN_NAME
+
+    def motor_toggle(self):
+        print(ax.get_vel())
+        dump_errors(od)
+        if ax.get_vel() == 0:
+            if self.count%2 == 0:
+                ax.set_vel(2)
+                ax.set_relative_pos(-5)
+                self.count += 1
+            elif self.count%2 == 1:
+                ax.set_vel(2)
+                ax.set_relative_pos(5)
+                self.count += 1
+            else:
+                print("motor_toggle command malfunction")
+        else:
+            if self.count%2 == 0:
+                ax.set_vel_limit(self.velocity_slider.value)
+                ax.set_relative_pos(-5)
+                self.count += 1
+            elif self.count%2 == 1:
+                ax.set_vel_limit(self.velocity_slider.value)
+                ax.set_relative_pos(5)
+                self.count += 1
+            else:
+                print("motor_toggle command malfunction")
 
 
     def admin_action(self):
