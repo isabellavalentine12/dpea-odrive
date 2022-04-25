@@ -3,6 +3,8 @@
     name: 'main'
     velocity_slider: velocity_slider
     velocity_slider_label: velocity_slider_label
+    acceleration_slider: acceleration_slider
+    acceleration_slider_label: acceleration_slider_label
 
     FloatLayout:
         size_hint: None, None
@@ -35,7 +37,7 @@
     Slider:
         id: velocity_slider
         size_hint: .1 ,1
-        x: root.width * 0.5
+        x: root.width * 0.3
         min: 0
         max: 10
         step: 0.01
@@ -43,9 +45,32 @@
         sensitivity: 'handle'
         on_value: root.velocity_function()
 
+    Slider:
+        id: acceleration_slider
+        size_hint: .1 ,1
+        x: root.width * 0.6
+        min: 0
+        max: 10
+        step: 0.01
+        orientation: 'vertical'
+        sensitivity: 'handle'
+        on_value: root.acceleration_function()
+
     Label:
         id: velocity_slider_label
         text: str(round(velocity_slider.value, 2))
+        size_hint: None, None
+        color: 0, .5, .5, 1
+        center_x: root.width * 0.35
+        center_y: root.height * 0.5
+        bold: True
+        outline_width: self.font_size * 0.1
+        outline_color: 0, 0, 0
+        font_size: 50
+
+    Label:
+        id: acceleration_slider_label
+        text: str(round(acceleration_slider.value, 2))
         size_hint: None, None
         color: 0, .5, .5, 1
         center_x: root.width * 0.65
@@ -58,6 +83,18 @@
     Label:
         id: motor_velocity_label
         text: 'Motor Velocity'
+        size_hint: None, None
+        color: 0, .5, .5, 1
+        center_x: root.width * 0.35
+        center_y: root.height * 0.42
+        bold: True
+        outline_width: self.font_size * 0.1
+        outline_color: 0, 0, 0
+        font_size: 20
+
+    Label:
+        id: acceleration_label
+        text: 'Acceleration'
         size_hint: None, None
         color: 0, .5, .5, 1
         center_x: root.width * 0.65

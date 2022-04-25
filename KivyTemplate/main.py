@@ -43,6 +43,8 @@ print("Current Limit: ", ax.get_current_limit())
 print("Velocity Limit: ", ax.get_vel_limit())
 ax.set_vel(0)
 dump_errors(od)
+od.clear_errors()
+od.axis0.controller.config.enable_overspeed_error = False
 
 class ProjectNameGUI(App):
     """
@@ -71,6 +73,11 @@ class MainScreen(Screen):
     def velocity_function(self):
         ax.set_vel(self.velocity_slider.value)
         self.velocity_slider.text = str(round(self.velocity_slider.value))
+        print('slider activated')
+
+    def acceleration_function(self):
+        self.acceleration_slider.text = str(round(self.acceleration_slider.value))
+        print('slider activated')
 
     def switch_to_traj(self):
         SCREEN_MANAGER.transition.direction = "left"
@@ -81,27 +88,32 @@ class MainScreen(Screen):
         SCREEN_MANAGER.current = GPIO_SCREEN_NAME
 
     def motor_toggle(self):
+        #ax.set_relative_pos(0)
         print(ax.get_vel())
-        dump_errors(od)
-        if ax.get_vel() == 0:
+        #dump_errors(od)
+        if ax.get_vel() <= 0.2:
             if self.count%2 == 0:
-                ax.set_vel(2)
-                ax.set_relative_pos(-5)
+                ax.set_rel_pos_traj(10, self.acceleration_slider.value, 10, self.acceleration_slider.value)
+                print('If vel = 0 and count% = 0 : ax.set_rel_pos_traj(-5, .5, 1, .5)')
                 self.count += 1
             elif self.count%2 == 1:
-                ax.set_vel(2)
-                ax.set_relative_pos(5)
+                ax.set_rel_pos_traj(-10, self.acceleration_slider.value, 10, self.acceleration_slider.value)
+                print('If vel = 0 and count% = 1 : ax.set_rel_pos_traj(5, .5, 1, .5)')
                 self.count += 1
             else:
                 print("motor_toggle command malfunction")
         else:
             if self.count%2 == 0:
-                ax.set_vel_limit(self.velocity_slider.value)
-                ax.set_relative_pos(-5)
+                ax.set_rel_pos_traj(5, self.acceleration_slider.value, self.velocity_slider.value, self.acceleration_slider.value)
+                print('If vel = moving and count% = 0 : ax.set_rel_pos_traj(5, .5, var, .5)')
+                #ax.set_vel_limit(self.velocity_slider.value)
+                #ax.set_relative_pos(-5)
                 self.count += 1
             elif self.count%2 == 1:
-                ax.set_vel_limit(self.velocity_slider.value)
-                ax.set_relative_pos(5)
+                ax.set_rel_pos_traj(-5, self.acceleration_slider.value, self.velocity_slider.value, self.acceleration_slider.value)
+                print('If vel = moving and count% = 1 : ax.set_rel_pos_traj(-5, .5, var, .5)')
+                #ax.set_vel_limit(self.velocity_slider.value)
+                #ax.set_relative_pos(5)
                 self.count += 1
             else:
                 print("motor_toggle command malfunction")

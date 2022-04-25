@@ -171,6 +171,7 @@ class ODriveAxis:
         # BUG: trajectory control not working when invoked after a velocity control, this line is used to
         # switch to position control without any side effects
         self.set_relative_pos(0)
+        self.axis.controller.input_vel = 0
 
         self.axis.trap_traj.config.accel_limit = accel
         self.axis.trap_traj.config.vel_limit = vel
