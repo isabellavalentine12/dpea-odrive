@@ -107,6 +107,12 @@
 <TrajectoryScreen>:
 
     name: 'main'
+    target_position: target_position
+    acceleration: acceleration
+    target_speed: target_speed
+    deceleration: deceleration
+    submit_button: submit_button
+
     FloatLayout:
         size_hint: None, None
 
@@ -114,13 +120,51 @@
         id: test_button
         text:'back'
         size: 100, 100
-        pos_hint: {"center_x": 0.5, "center_y":0.5}
+        pos_hint: {"center_x": 0.5, "center_y":0.7}
         color: 0, 1, 0, 1
         on_press: root.switch_screen()
+
+    TextInput:
+        id: target_position
+        hint_text: 'target position'
+        size_hint: .35, .1
+        font_size: 40
+        pos_hint: {"center_x": 0.5, "center_y":0.45}
+
+    TextInput:
+        id: acceleration
+        hint_text: 'acceleration'
+        size_hint: .35, .1
+        font_size: 40
+        pos_hint: {"center_x": 0.5, "center_y":0.35}
+
+    TextInput:
+        id: target_speed
+        hint_text: 'target speed'
+        size_hint: .35, .1
+        font_size: 40
+        pos_hint: {"center_x": 0.5, "center_y":0.25}
+
+    TextInput:
+        id: deceleration
+        hint_text: 'deceleration'
+        size_hint: .35, .1
+        font_size: 40
+        pos_hint: {"center_x": 0.5, "center_y":0.15}
+
+    DPEAButton:
+        id: submit_button
+        text:'submit'
+        size: 100, 100
+        pos_hint: {"center_x": 0.75, "center_y":0.2}
+        color: 0, 1, 0, 1
+        on_press: root.submit_trapezoidal_traj()
 
 <GPIOScreen>:
 
     name: 'main'
+    on_enter: root.homing_switch()
+
     FloatLayout:
         size_hint: None, None
 

@@ -8,6 +8,9 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.textinput import TextInput
+from odrive_helpers import digital_read
 
 from pidev.MixPanel import MixPanel
 from pidev.kivy.PassCodeScreen import PassCodeScreen
@@ -33,6 +36,7 @@ assert od.config.enable_brake_resistor is True, "Check for faulty brake resistor
 # axis0 and axis1 correspond to M0 and M1 on the ODrive
 # You can also set the current limit and velocity limit when initializing the axis
 ax = ODriveAxis(od.axis0, current_lim=10, vel_lim=10)
+#digital_read(od, 2) #od defined after od is defined
 # Basic motor tuning, for more precise tuning,
 # follow this guide: https://docs.odriverobotics.com/v/latest/control.html#tuning
 ax.set_gains()
@@ -137,11 +141,19 @@ class TrajectoryScreen(Screen):
         SCREEN_MANAGER.transition.direction = "right"
         SCREEN_MANAGER.current = MAIN_SCREEN_NAME
 
+    def submit_trapezoidal_traj(self):
+        ax.set_vel_limit(10)
+        ax.set_pos_traj(int(self.target_position.text), int(self.acceleration.text), int(self.target_speed.text), int(self.deceleration.text))  # position 5, acceleration 1 turn/s^2, target velocity 10 turns/s, deceleration 1 turns/s^2
 
 class GPIOScreen(Screen):
     """
     Class to handle the GPIO screen and its associated touch/listening events
     """
+
+    #ax.home_with_endstop(self, vel, offset, min_gpio_num):
+
+    def homing_switch(self):
+        ax.home_with_endstop(1, 1, 2)
 
     def switch_screen(self):
         SCREEN_MANAGER.transition.direction = "left"
