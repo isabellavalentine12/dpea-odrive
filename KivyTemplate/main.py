@@ -42,7 +42,7 @@ ax = ODriveAxis(od.axis0, current_lim=10, vel_lim=10)
 ax.set_gains()
 if not ax.is_calibrated():
     print("calibrating...")
-    ax.calibrate_with_current_lim(10)
+    ax.calibrate_with_current_lim(15)
 print("Current Limit: ", ax.get_current_limit())
 print("Velocity Limit: ", ax.get_vel_limit())
 ax.set_vel(0)
@@ -90,6 +90,9 @@ class MainScreen(Screen):
     def switch_to_gpio(self):
         SCREEN_MANAGER.transition.direction = "right"
         SCREEN_MANAGER.current = GPIO_SCREEN_NAME
+
+    def home_without_endstop(self):
+        ax.home_without_endstop(1, .5) # Home with velocity 1 until wall is hit, then offset .5 rotations
 
     def motor_toggle(self):
         #ax.set_relative_pos(0)
